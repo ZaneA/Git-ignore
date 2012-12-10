@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+# This script downloads .gitignore files from GitHub
+
+require 'json'
+require 'open-uri'
+
+require 'rainbow'
+
+if ARGV.length == 0
+  $stderr.puts 'Usage: git-ignore <template> [template ...]'
+
+  begin
+    open('https://api.github.com/gitignore/templates') do |resp|
+      templates = JSON::load(resp)
+
+      puts 'Where <template> is one of:'
+      puts templates.join(', ').color(:yellow)
+    end
+  rescue
+    $stderr.puts 'Unable to fetch template list from GitHub. Sorry.'.color(:red)
+  end
+
+  exit 1
+end
+
+output = ''
+
+ARGV.each do |template|
+  puts "Fetching #{template} .gitignore template.."
+
+  begin
+    open("https://api.github.com/gitignore/templates/#{template}") do |resp|
+      template = JSON::load(resp)
+
+      output << template['source']
+    end
+  rescue
+    $stderr.puts "Unable to fetch #{template}.".color(:red)
+  end
+end
+
+File.write('.gitignore', output)
+
+puts 'Done.'.color(:green)
