@@ -1,16 +1,22 @@
 #!/usr/bin/env ruby
 
-# This script downloads .gitignore files from GitHub
+# This script downloads .gitignore files from GitHub.
 
 require 'json'
 require 'open-uri'
 
+# Require and explicitly enable Rainbow, as STDOUT is no longer a TTY when redirecting.
 require 'rainbow'
+Sickill::Rainbow.enabled = true
 
 if ARGV.length == 0
-  $stderr.puts 'Usage: git-ignore <template> [template ...]'
+  # Print usage.
+  $stderr.puts 'Output .gitignore templates to STDOUT.'
+  $stderr.puts 'Usage: git ignore <template> [template ...]'
+  $stderr.flush
 
   begin
+    # Fetch a list of supported templates from GitHub and print them.
     open('https://api.github.com/gitignore/templates') do |resp|
       templates = JSON::load(resp)
 
@@ -24,12 +30,14 @@ if ARGV.length == 0
   exit 1
 end
 
+# Hold output in here.
 output = ''
 
 ARGV.each do |template|
-  puts "Fetching #{template} .gitignore template.."
+  $stderr.puts "Fetching #{template} .gitignore template..".color(:yellow)
 
   begin
+    # Fetch template from GitHub.
     open("https://api.github.com/gitignore/templates/#{template}") do |resp|
       template = JSON::load(resp)
 
@@ -40,6 +48,8 @@ ARGV.each do |template|
   end
 end
 
-File.write('.gitignore', output)
+# Print the templates to STDOUT, user should redirect this to .gitignore file manually.
+# This is so that the user can append to an existing .gitignore file.
+$stdout.puts output
 
-puts 'Done.'.color(:green)
+$stderr.puts 'Done.'.color(:green)
