@@ -13,7 +13,7 @@ Installation
 
 Run `bundle install` inside the repo to grab the `rainbow` gem, used for coloring the output.
 
-Symlink the `git-ignore` file somewhere into your `$PATH`.
+Symlink/copy the `git-ignore` file to somewhere in your `$PATH`.
 
 Usage
 ---
